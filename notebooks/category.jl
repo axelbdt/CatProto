@@ -5,7 +5,29 @@ using Markdown
 using InteractiveUtils
 
 # ╔═╡ 283855a4-bcf9-11ed-2bb7-f37bed142d7e
-using Catlab, Catlab.Theories, Catlab.CategoricalAlgebra, Catlab.Graphics
+using Catlab, Catlab.Theories, Catlab.CategoricalAlgebra
+
+# ╔═╡ ab3a4dd0-0875-4d6b-9087-29bbf278b7fc
+using Catlab.CategoricalAlgebra.Limits
+
+# ╔═╡ 146f7fec-69c5-43a9-b635-2d75ad0ae625
+using Catlab.Graphics
+
+# ╔═╡ 93172093-299e-487a-99b5-e090795fd35d
+md"""
+# Creating a category or a diagram
+"""
+
+# ╔═╡ 3ab926c7-e4a4-4966-b8fa-31c209ba2e96
+md"""
+## The @present macro
+
+A nice, readable way to define a Category.
+
+But it's encapsulated in a Presentation type, and I am not sure how to access the underlying category. Works for drawing though.
+
+[Succint doc on present](https://algebraicjulia.github.io/Catlab.jl/stable/apis/core/#Catlab.Present)
+"""
 
 # ╔═╡ 5f118421-0285-4c46-b643-6095b43fcf6d
 @present MyCat(FreeCategory) begin
@@ -17,6 +39,75 @@ end
 
 # ╔═╡ cdc3122c-5519-45a9-8015-f67be80fd3b9
 to_graphviz(MyCat)
+
+# ╔═╡ ec990859-df98-48b2-ae1c-87b79c108fe7
+@present MyCat2(FreeCategory) begin
+  (A, B, C)::Ob
+  f::Hom(A, C)
+  g::Hom(B, C)
+end
+
+# ╔═╡ 24e1ec5e-13f2-44e4-b725-36972404132c
+to_graphviz(MyCat2)
+
+# ╔═╡ 44faf739-cf1a-4307-8e74-c835f7eac6b9
+md"""
+Not sure how to work with MyCat2, e.g: selecting diagram, finding colimits...
+"""
+
+# ╔═╡ 6139f573-4c74-43db-83eb-e7f77036c88f
+md"""
+### FreeDiagram and @present
+
+You can create a FreeDiagram with @present, but it embeds more objects, not sure what they reprensent. Also, you actually get a FreeSchema.
+"""
+
+# ╔═╡ 09262d97-be4a-4ee4-ac27-f234bf48ace3
+@present MyDiagram(FreeDiagram) begin
+	(X, Y, Z)::Ob
+	f::Hom(DD,FF)
+	g::Hom(EE,FF)
+end
+
+# ╔═╡ 1fddb887-b296-43b9-962f-859f5903fcaf
+to_graphviz(MyDiagram)
+
+# ╔═╡ 6f00c31a-96c0-49ac-83c6-77f8a357b3da
+md"""
+## Using Julia objects
+"""
+
+# ╔═╡ 6891770c-2a46-40b9-b083-c21b808cbea5
+md"""
+You can create a FreeDiagram with a bunch of Julia constructors to create Objects, Homomorphism and finally a diagram.
+"""
+
+# ╔═╡ 9e5b620a-a2b9-44ba-a7f9-b4873789d2c1
+begin
+	A, B, C = Ob(FreeCategory, :A, :B, :C)
+	f, g = Hom(:f, A, C), Hom(:g, B, C)
+	d = FreeDiagram([A, B, C], [(f, 1, 3), (g, 2, 3)])
+end
+
+# ╔═╡ 79a6831b-0ce5-4684-828c-c521ea493e50
+to_graphviz(d)
+
+# ╔═╡ 84c314a5-9215-4c82-8d14-2e481959ba63
+to_graphviz(d, node_labels=true, edge_labels=true)
+
+# ╔═╡ 3cf6f6bf-b2d7-4d11-ab6a-a300cd6c8bb1
+md"""
+Find the colimit of two objects, don't know how you'd work with the diagram.
+"""
+
+# ╔═╡ 05205a9e-af8d-45fd-8863-c04113d463c2
+begin
+	colim = Colimit(ObjectPair(A,B), Cospan(f,g))
+	ob(colim) == C
+end
+
+# ╔═╡ 26b9474d-9ce6-41bc-b344-efd41900a8eb
+colimit(d)
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -426,7 +517,25 @@ version = "17.4.0+0"
 
 # ╔═╡ Cell order:
 # ╠═283855a4-bcf9-11ed-2bb7-f37bed142d7e
+# ╠═ab3a4dd0-0875-4d6b-9087-29bbf278b7fc
+# ╠═146f7fec-69c5-43a9-b635-2d75ad0ae625
+# ╠═93172093-299e-487a-99b5-e090795fd35d
+# ╟─3ab926c7-e4a4-4966-b8fa-31c209ba2e96
 # ╠═5f118421-0285-4c46-b643-6095b43fcf6d
 # ╠═cdc3122c-5519-45a9-8015-f67be80fd3b9
+# ╠═ec990859-df98-48b2-ae1c-87b79c108fe7
+# ╠═24e1ec5e-13f2-44e4-b725-36972404132c
+# ╟─44faf739-cf1a-4307-8e74-c835f7eac6b9
+# ╟─6139f573-4c74-43db-83eb-e7f77036c88f
+# ╠═09262d97-be4a-4ee4-ac27-f234bf48ace3
+# ╠═1fddb887-b296-43b9-962f-859f5903fcaf
+# ╟─6f00c31a-96c0-49ac-83c6-77f8a357b3da
+# ╟─6891770c-2a46-40b9-b083-c21b808cbea5
+# ╠═9e5b620a-a2b9-44ba-a7f9-b4873789d2c1
+# ╠═79a6831b-0ce5-4684-828c-c521ea493e50
+# ╠═84c314a5-9215-4c82-8d14-2e481959ba63
+# ╟─3cf6f6bf-b2d7-4d11-ab6a-a300cd6c8bb1
+# ╠═05205a9e-af8d-45fd-8863-c04113d463c2
+# ╠═26b9474d-9ce6-41bc-b344-efd41900a8eb
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
