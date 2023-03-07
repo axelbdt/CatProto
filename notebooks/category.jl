@@ -4,17 +4,19 @@
 using Markdown
 using InteractiveUtils
 
-# ╔═╡ 8041d5a6-bcde-11ed-1929-0bc1c98aa50c
-using Catlab.Graphs, Catlab.Graphics
+# ╔═╡ 283855a4-bcf9-11ed-2bb7-f37bed142d7e
+using Catlab, Catlab.Theories, Catlab.CategoricalAlgebra, Catlab.Graphics
 
-# ╔═╡ a5bab2ef-5f63-4a39-9a66-5b6ef064da8d
-g = cycle_graph(Graph, 3)
+# ╔═╡ 5f118421-0285-4c46-b643-6095b43fcf6d
+@present MyCat(FreeCategory) begin
+  (A, B)::Ob
+  i::Hom(A, B)
+  r::Hom(B, A)
+  compose(i, r) == id(A)
+end
 
-# ╔═╡ 3c53e14e-8389-491e-9489-bb6bc64ea49c
-to_graphviz(g)
-
-# ╔═╡ 9ae10441-fffb-49af-a3a1-2220c2e7ad2d
-to_graphviz(g, node_labels=true, edge_labels=true)
+# ╔═╡ cdc3122c-5519-45a9-8015-f67be80fd3b9
+to_graphviz(MyCat)
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -31,7 +33,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.8.5"
 manifest_format = "2.0"
-project_hash = "e2ec8b830f1431811fcba0e20abb3ea0b281a640"
+project_hash = "11287d58760278899526978fafba58041a8f899f"
 
 [[deps.ArgTools]]
 uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
@@ -423,9 +425,8 @@ version = "17.4.0+0"
 """
 
 # ╔═╡ Cell order:
-# ╠═8041d5a6-bcde-11ed-1929-0bc1c98aa50c
-# ╠═a5bab2ef-5f63-4a39-9a66-5b6ef064da8d
-# ╠═3c53e14e-8389-491e-9489-bb6bc64ea49c
-# ╠═9ae10441-fffb-49af-a3a1-2220c2e7ad2d
+# ╠═283855a4-bcf9-11ed-2bb7-f37bed142d7e
+# ╠═5f118421-0285-4c46-b643-6095b43fcf6d
+# ╠═cdc3122c-5519-45a9-8015-f67be80fd3b9
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
