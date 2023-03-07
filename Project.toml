@@ -1,0 +1,8 @@
+name = "CatProto"
+uuid = "f34a4e09-1bb4-438d-be73-46c1f5cd7e58"
+authors = ["Axel Baudot <axel.baudot@protonmail.com>"]
+version = "0.1.0"
+
+[deps]
+Catlab = "134e5e36-593f-5add-ad60-77f754baafbe"
+Pluto = "c3e4b0f8-55cb-11ea-2926-15256bba5781"
