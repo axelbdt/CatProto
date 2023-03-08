@@ -4,110 +4,69 @@
 using Markdown
 using InteractiveUtils
 
-# ╔═╡ 283855a4-bcf9-11ed-2bb7-f37bed142d7e
-using Catlab, Catlab.Theories, Catlab.CategoricalAlgebra
+# ╔═╡ 768002f6-bda4-11ed-3aaa-ed716411f129
+using Catlab, Catlab.Theories, Catlab.CategoricalAlgebra, Catlab.Programs
 
-# ╔═╡ ab3a4dd0-0875-4d6b-9087-29bbf278b7fc
-using Catlab.CategoricalAlgebra.Limits
-
-# ╔═╡ 146f7fec-69c5-43a9-b635-2d75ad0ae625
+# ╔═╡ 361c8dc0-3c4b-4ddb-8640-71c7f78ca34a
 using Catlab.Graphics
 
-# ╔═╡ 93172093-299e-487a-99b5-e090795fd35d
+# ╔═╡ 47a1d964-a488-44c6-872b-120969a34905
 md"""
-# Creating a category or a diagram
+## For a category defined with FinCat
 """
 
-# ╔═╡ 3ab926c7-e4a4-4966-b8fa-31c209ba2e96
-md"""
-## The @present macro
-
-A nice, readable way to define a Category.
-
-But it's encapsulated in a Presentation type, and I am not sure how to access the underlying category. Works for drawing though.
-
-[Succint doc on present](https://algebraicjulia.github.io/Catlab.jl/stable/apis/core/#Catlab.Present)
-"""
-
-# ╔═╡ 5f118421-0285-4c46-b643-6095b43fcf6d
-@present MyCat(FreeCategory) begin
-  (A, B)::Ob
-  i::Hom(A, B)
-  r::Hom(B, A)
-  compose(i, r) == id(A)
+# ╔═╡ a212345d-7ecf-432c-9e38-e4a247033671
+MyCat = @fincat begin
+	X, Y, Z
+	u: X → Z
+	v: Y → Z
 end
 
-# ╔═╡ cdc3122c-5519-45a9-8015-f67be80fd3b9
-to_graphviz(MyCat)
+# ╔═╡ 7bbeb417-c33d-42a8-a984-7ac9c546278c
+d = @diagram MyCat begin
+	x::X
+	y::Y
+	z::Z
+	# How to include arrows ???
+end
 
-# ╔═╡ ec990859-df98-48b2-ae1c-87b79c108fe7
+# ╔═╡ f1d06ecf-c860-4774-8152-2beee148521a
+to_graphviz(d, node_labels=true, edge_labels=true)
+
+# ╔═╡ 09c1f983-9c9e-4abe-bf8c-a1f50e1a53c8
+colimit(d)
+# Maybe algo is missing
+
+# ╔═╡ 90d80f11-46f8-4931-a773-d58844b39196
+md"""
+## With a category defined with @present (FreeCategory)
+"""
+
+# ╔═╡ 879f6e61-8442-49d6-8760-53019b1bdf36
 @present MyCat2(FreeCategory) begin
   (A, B, C)::Ob
   f::Hom(A, C)
   g::Hom(B, C)
 end
 
-# ╔═╡ 24e1ec5e-13f2-44e4-b725-36972404132c
+# ╔═╡ 013409b7-221c-45f3-9f47-0688c2342f32
 to_graphviz(MyCat2)
 
-# ╔═╡ 44faf739-cf1a-4307-8e74-c835f7eac6b9
-md"""
-Not sure how to work with MyCat2, e.g: selecting diagram, finding colimits...
-"""
-
-# ╔═╡ 6139f573-4c74-43db-83eb-e7f77036c88f
-md"""
-### FreeDiagram and @present
-
-You can create a FreeDiagram with @present, but it embeds more objects, not sure what they reprensent. Also, you actually get a FreeSchema.
-"""
-
-# ╔═╡ 09262d97-be4a-4ee4-ac27-f234bf48ace3
-@present MyDiagram(FreeDiagram) begin
-	(X, Y, Z)::Ob
-	f::Hom(X,Z)
-	g::Hom(Y,Z)
+# ╔═╡ e3103479-d7b9-4ec7-b97b-352a8b09bc18
+my_d = @free_diagram MyCat2 begin
+	a::A
+	b::B
+	c::C
+	c == f(a)
+	c == g(b)
 end
 
-# ╔═╡ 1fddb887-b296-43b9-962f-859f5903fcaf
-to_graphviz(MyDiagram)
+# ╔═╡ 9c29d7ce-1022-43af-9536-ac5617c64193
+to_graphviz(my_d, node_labels=true, edge_labels=true)
 
-# ╔═╡ 6f00c31a-96c0-49ac-83c6-77f8a357b3da
-md"""
-## Using Julia objects
-"""
-
-# ╔═╡ 6891770c-2a46-40b9-b083-c21b808cbea5
-md"""
-You can create a FreeDiagram with a bunch of Julia constructors to create Objects, Homomorphism and finally a diagram.
-"""
-
-# ╔═╡ 9e5b620a-a2b9-44ba-a7f9-b4873789d2c1
-begin
-	A, B, C = Ob(FreeCategory, :A, :B, :C)
-	f, g = Hom(:f, A, C), Hom(:g, B, C)
-	d = FreeDiagram([A, B, C], [(f, 1, 3), (g, 2, 3)])
-end
-
-# ╔═╡ 79a6831b-0ce5-4684-828c-c521ea493e50
-to_graphviz(d)
-
-# ╔═╡ 84c314a5-9215-4c82-8d14-2e481959ba63
-to_graphviz(d, node_labels=true, edge_labels=true)
-
-# ╔═╡ 3cf6f6bf-b2d7-4d11-ab6a-a300cd6c8bb1
-md"""
-Find the colimit of two objects, don't know how you'd work with the diagram.
-"""
-
-# ╔═╡ 05205a9e-af8d-45fd-8863-c04113d463c2
-begin
-	colim = Colimit(ObjectPair(A,B), Cospan(f,g))
-	ob(colim) == C
-end
-
-# ╔═╡ 26b9474d-9ce6-41bc-b344-efd41900a8eb
-colimit(d)
+# ╔═╡ ac254eda-5424-45cc-b675-e36085730818
+colimit(my_d)
+# Maybe the algo is missing
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -124,7 +83,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.8.5"
 manifest_format = "2.0"
-project_hash = "e2ec8b830f1431811fcba0e20abb3ea0b281a640"
+project_hash = "11287d58760278899526978fafba58041a8f899f"
 
 [[deps.ArgTools]]
 uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
@@ -516,26 +475,18 @@ version = "17.4.0+0"
 """
 
 # ╔═╡ Cell order:
-# ╠═283855a4-bcf9-11ed-2bb7-f37bed142d7e
-# ╠═ab3a4dd0-0875-4d6b-9087-29bbf278b7fc
-# ╠═146f7fec-69c5-43a9-b635-2d75ad0ae625
-# ╠═93172093-299e-487a-99b5-e090795fd35d
-# ╟─3ab926c7-e4a4-4966-b8fa-31c209ba2e96
-# ╠═5f118421-0285-4c46-b643-6095b43fcf6d
-# ╠═cdc3122c-5519-45a9-8015-f67be80fd3b9
-# ╠═ec990859-df98-48b2-ae1c-87b79c108fe7
-# ╠═24e1ec5e-13f2-44e4-b725-36972404132c
-# ╟─44faf739-cf1a-4307-8e74-c835f7eac6b9
-# ╟─6139f573-4c74-43db-83eb-e7f77036c88f
-# ╠═09262d97-be4a-4ee4-ac27-f234bf48ace3
-# ╠═1fddb887-b296-43b9-962f-859f5903fcaf
-# ╟─6f00c31a-96c0-49ac-83c6-77f8a357b3da
-# ╟─6891770c-2a46-40b9-b083-c21b808cbea5
-# ╠═9e5b620a-a2b9-44ba-a7f9-b4873789d2c1
-# ╠═79a6831b-0ce5-4684-828c-c521ea493e50
-# ╠═84c314a5-9215-4c82-8d14-2e481959ba63
-# ╟─3cf6f6bf-b2d7-4d11-ab6a-a300cd6c8bb1
-# ╠═05205a9e-af8d-45fd-8863-c04113d463c2
-# ╠═26b9474d-9ce6-41bc-b344-efd41900a8eb
+# ╠═768002f6-bda4-11ed-3aaa-ed716411f129
+# ╠═361c8dc0-3c4b-4ddb-8640-71c7f78ca34a
+# ╟─47a1d964-a488-44c6-872b-120969a34905
+# ╠═a212345d-7ecf-432c-9e38-e4a247033671
+# ╠═7bbeb417-c33d-42a8-a984-7ac9c546278c
+# ╠═f1d06ecf-c860-4774-8152-2beee148521a
+# ╠═09c1f983-9c9e-4abe-bf8c-a1f50e1a53c8
+# ╠═90d80f11-46f8-4931-a773-d58844b39196
+# ╠═879f6e61-8442-49d6-8760-53019b1bdf36
+# ╠═013409b7-221c-45f3-9f47-0688c2342f32
+# ╠═e3103479-d7b9-4ec7-b97b-352a8b09bc18
+# ╠═9c29d7ce-1022-43af-9536-ac5617c64193
+# ╠═ac254eda-5424-45cc-b675-e36085730818
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
