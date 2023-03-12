@@ -8,7 +8,7 @@ using InteractiveUtils
 using Catlab, Catlab.Theories, Catlab.CategoricalAlgebra
 
 # ╔═╡ ab3a4dd0-0875-4d6b-9087-29bbf278b7fc
-using Catlab.CategoricalAlgebra.Limits
+using Catlab.CategoricalAlgebra.Limits, Catlab.Programs.DiagrammaticPrograms, Catlab.Graphs
 
 # ╔═╡ 146f7fec-69c5-43a9-b635-2d75ad0ae625
 using Catlab.Graphics
@@ -108,6 +108,55 @@ end
 
 # ╔═╡ 26b9474d-9ce6-41bc-b344-efd41900a8eb
 colimit(d)
+
+# ╔═╡ 53e80f5c-dfa3-4468-b956-82ae11477f3e
+md"""
+# Finite Categories (FinCat)
+
+> This module is for the 2-category **Cat** what the module [`FinSets`](@ref) is
+> for the category **Set**: a finitary, combinatorial setting where explicit
+> calculations can be carried out. We emphasize that the prefix `Fin` means
+> "finitely presented," not "finite,"
+
+FinCat are described with a graph and equations.
+"""
+
+# ╔═╡ 1072480c-f916-4ba0-bd1c-3e5069e09330
+md"""
+## @fincat macro
+"""
+
+# ╔═╡ 208bf55e-857f-4934-928c-08e71726a2b0
+myFinCat = @fincat begin
+  V, E
+  (δ₀, δ₁): V → E
+  σ₀: E → V
+
+  σ₀ ∘ δ₀ == id(V)
+  σ₀ ∘ δ₁ == id(V)
+end
+
+# ╔═╡ 7d9f689f-bc6c-4d05-b54b-07626f9a3f3b
+to_graphviz(graph(myFinCat), edge_labels=true, node_labels=true)
+
+# ╔═╡ 4a4688bf-f8b6-4c92-b35e-e3bab49b7eb8
+md"""
+## Graph + equations
+"""
+
+# ╔═╡ 8d77c919-9ef0-4943-b151-2bc3855fa86f
+my_graph = @acset Graph begin
+  V = 4
+  E = 5
+  src = [1,1,2,3,3]
+  tgt = [2,3,4,4,4]
+end
+
+# ╔═╡ 1ab1c24f-1323-4dab-9270-2f1104924cb8
+to_graphviz(my_graph, edge_labels=true, node_labels=true)
+
+# ╔═╡ decd7d8c-ddd9-4e12-8cbb-a12d6ee49a06
+myFinCat2 = FinCat(my_graph, [4=>5])
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -519,7 +568,7 @@ version = "17.4.0+0"
 # ╠═283855a4-bcf9-11ed-2bb7-f37bed142d7e
 # ╠═ab3a4dd0-0875-4d6b-9087-29bbf278b7fc
 # ╠═146f7fec-69c5-43a9-b635-2d75ad0ae625
-# ╠═93172093-299e-487a-99b5-e090795fd35d
+# ╟─93172093-299e-487a-99b5-e090795fd35d
 # ╟─3ab926c7-e4a4-4966-b8fa-31c209ba2e96
 # ╠═5f118421-0285-4c46-b643-6095b43fcf6d
 # ╠═cdc3122c-5519-45a9-8015-f67be80fd3b9
@@ -537,5 +586,13 @@ version = "17.4.0+0"
 # ╟─3cf6f6bf-b2d7-4d11-ab6a-a300cd6c8bb1
 # ╠═05205a9e-af8d-45fd-8863-c04113d463c2
 # ╠═26b9474d-9ce6-41bc-b344-efd41900a8eb
+# ╟─53e80f5c-dfa3-4468-b956-82ae11477f3e
+# ╟─1072480c-f916-4ba0-bd1c-3e5069e09330
+# ╠═208bf55e-857f-4934-928c-08e71726a2b0
+# ╠═7d9f689f-bc6c-4d05-b54b-07626f9a3f3b
+# ╟─4a4688bf-f8b6-4c92-b35e-e3bab49b7eb8
+# ╠═8d77c919-9ef0-4943-b151-2bc3855fa86f
+# ╠═1ab1c24f-1323-4dab-9270-2f1104924cb8
+# ╠═decd7d8c-ddd9-4e12-8cbb-a12d6ee49a06
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
